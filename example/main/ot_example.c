@@ -14,6 +14,8 @@ static const char *TAG = "ot-example";
 
 volatile float dhwTemp = 0;
 volatile bool fault = false;
+static int targetDHWTemp = 41;
+static int targetCHTemp = 60;
 
 static void ot_handler(void *arg);
 static void IRAM_ATTR ot_processResponseCallback(unsigned long response, OpenThermResponseStatus_t responseStatus);
@@ -31,49 +33,49 @@ static void IRAM_ATTR ot_handler(void *arg)
 
 static void IRAM_ATTR ot_processResponseCallback(unsigned long response, OpenThermResponseStatus_t responseStatus)
 {
-    printf("Response from processResponseCallback!\n");
-    printf("var response From CB: %lu\n", response);
-    printf("var responseStatus from CB: %i\n", (int)responseStatus);
+    // normally you shouldn't call printf in an interrupt handler, it will crash something.
+    ESP_LOGI(TAG, "Response from processResponseCallback!\n");
+    ESP_LOGI(TAG, "var response From CB: %lu\n", response);
+    ESP_LOGI(TAG, "var responseStatus from CB: %i\n", (int)responseStatus);
 }
 
 void otControl(void *pvParameter)
 {
     while (1)
     {
-        unsigned long status = ot_setBoilerStatus(true, true);
+        unsigned long status = ot_setBoilerStatus(false, true);
 
         OpenThermResponseStatus_t responseStatus = ot_getLastResponseStatus();
         if (responseStatus == OT_SUCCESS)
         {
-            printf("Central Heating: %s\n", ot_isCentralHeatingActive(status) ? "ON" : "OFF");
-            printf("Hot Water: %s\n", ot_isHotWaterActive(status) ? "ON" : "OFF");
+            ESP_LOGI(TAG, "Central Heating: %s\n", ot_isCentralHeatingActive(status) ? "ON" : "OFF");
+            ESP_LOGI(TAG, "Hot Water: %s\n", ot_isHotWaterActive(status) ? "ON" : "OFF");
+            ESP_LOGI(TAG, "Flame: %s\n", ot_isFlameOn(status) ? "ON" : "OFF");
             fault = ot_isFault(status);
-            printf("Flame: %s\n", ot_isFlameOn(status) ? "ON" : "OFF");
-            printf("Fault: %s\n", fault ? "YES" : "NO");
+            ESP_LOGI(TAG, "Fault: %s\n", fault ? "YES" : "NO");
+            ESP_LOGI(TAG, "Set CH Temp to: %i\n", ot_setBoilerTemperature(targetCHTemp));
+            ESP_LOGI(TAG, "Set DHW Temp to: %i\n", ot_setDHWTemperature(targetDHWTemp));
+            dhwTemp = ot_getDHWTemperature();
+            ESP_LOGI(TAG, "DHW Temp: %.1f\n", dhwTemp);
         }
         else if (responseStatus == OT_TIMEOUT)
         {
-            printf("Timeout\n");
+            ESP_LOGE(TAG, "OT Communication Timeout\n");
         }
         else if (responseStatus == OT_INVALID)
         {
-            printf("Invalid\n");
+            ESP_LOGE(TAG, "OT Communication Invalid\n");
         }
         else if (responseStatus == OT_NONE)
         {
-            printf("OpenTherm not initialized\n");
+            ESP_LOGE(TAG, "OpenTherm not initialized\n");
         }
-        if (ot_setDHWTemperature(41))
-        {
-            printf("Set DHW Temp!\n");
-        };
+
         if (fault)
         {
-            printf("Fault Code: %i\n", ot_getFault());
+            ESP_LOGE(TAG, "Fault Code: %i\n", ot_getFault());
         }
-        dhwTemp = ot_getDHWTemperature();
-        printf("DHW Temp: %.1f\n", dhwTemp);
-        ot_setBoilerTemperature(80);
+
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
