@@ -432,7 +432,7 @@ bool ot_setDHWTemperature(float temperature)
 float ot_getDHWTemperature()
 {
     unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otTdhw, 0));
-    return ot_isValidResponse(response) ? ot_getFloat(response) : 1;
+    return ot_isValidResponse(response) ? ot_getFloat(response) : 0;
 }
 
 float ot_getModulation()
