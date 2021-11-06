@@ -144,3 +144,5 @@ float ot_getDHWTemperature();
 float ot_getModulation();
 float ot_getPressure();
 unsigned int ot_getFault();
+const char *ot_statusToString(OpenThermResponseStatus_t status);
+const char *ot_messageTypeToString(OpenThermMessageType_t message_type);

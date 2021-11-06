@@ -452,3 +452,45 @@ unsigned int ot_getFault()
 {
     return ((ot_sendRequest(ot_buildRequest(OT_READ_DATA, otASFflags, 0)) >> 8) & 0xff);
 }
+
+const char *ot_statusToString(OpenThermResponseStatus_t status)
+{
+    switch (status)
+    {
+    case OT_NONE:
+        return "NONE";
+    case OT_SUCCESS:
+        return "SUCCESS";
+    case OT_INVALID:
+        return "INVALID";
+    case OT_TIMEOUT:
+        return "TIMEOUT";
+    default:
+        return "UNKNOWN";
+    }
+}
+
+const char *ot_messageTypeToString(OpenThermMessageType_t message_type)
+{
+    switch (message_type)
+    {
+    case OT_READ_DATA:
+        return "READ_DATA";
+    case OT_WRITE_DATA:
+        return "WRITE_DATA";
+    case OT_INVALID_DATA:
+        return "INVALID_DATA";
+    case OT_RESERVED:
+        return "RESERVED";
+    case OT_READ_ACK:
+        return "READ_ACK";
+    case OT_WRITE_ACK:
+        return "WRITE_ACK";
+    case OT_DATA_INVALID:
+        return "DATA_INVALID";
+    case OT_UNKNOWN_DATA_ID:
+        return "UNKNOWN_DATA_ID";
+    default:
+        return "UNKNOWN";
+    }
+}
