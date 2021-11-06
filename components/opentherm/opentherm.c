@@ -1,5 +1,4 @@
 #include "opentherm.h"
-#include <rom/ets_sys.h>
 
 #define HIGH 1
 #define LOW 0
@@ -27,11 +26,13 @@
 #ifndef HELPER_TARGET_IS_ESP32
 #define HELPER_TARGET_IS_ESP32 (1)
 #define HELPER_TARGET_IS_ESP8266 (0)
+#include <esp32/rom/ets_sys.h>
 #endif
 #elif defined(CONFIG_IDF_TARGET_ESP8266)
 #ifndef HELPER_TARET_IS_ESP8266
 #define HELPER_TARGET_IS_ESP32 (0)
 #define HELPER_TARGET_IS_ESP8266 (1)
+#include <rom/ets_sys.h>
 #endif
 #else
 #error BUG: cannot determine the target
