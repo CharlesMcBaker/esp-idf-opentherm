@@ -376,11 +376,6 @@ extern "C"
         return data;
     }
 
-    unsigned long buildGetBoilerTemperatureRequest()
-    {
-        return ot_buildRequest(OT_READ_DATA, otTboiler, 0);
-    }
-
     unsigned long ot_setBoilerStatus(bool enableCH, bool enableDHW)
     {
         unsigned int data = enableCH | enableDHW << 1;
@@ -397,7 +392,7 @@ extern "C"
 
     float ot_getBoilerTemperature()
     {
-        unsigned long response = ot_sendRequest(buildGetBoilerTemperatureRequest());
+        unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otTboiler, 0));
         return ot_isValidResponse(response) ? ot_getFloat(response) : 0;
     }
 
@@ -452,7 +447,7 @@ extern "C"
 
     unsigned int ot_getFault()
     {
-        return ((ot_sendRequest(ot_buildRequest(OT_READ_DATA, otASFflags, 0)) >> 8) & 0xff);
+        return (ot_sendRequest(ot_buildRequest(OT_READ_DATA, otASFflags, 0)) & 0xff);
     }
 
     const char *ot_statusToString(OpenThermResponseStatus_t status)
