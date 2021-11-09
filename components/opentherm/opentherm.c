@@ -109,6 +109,7 @@ extern "C"
         if (!ready)
             return false;
 
+        PORT_ENTER_CRITICAL;
         _otStatus = OT_REQUEST_SENDING;
         _otResponse = 0;
         _otResponseStatus = OT_NONE;
@@ -124,6 +125,7 @@ extern "C"
 
         _otStatus = OT_RESPONSE_WAITING;
         _otResponseTimeStamp = esp_timer_get_time();
+        PORT_EXIT_CRITICAL;
 
         return true;
     }
@@ -439,12 +441,13 @@ extern "C"
     unsigned long ot_getSlaveProductVersion()
     {
         unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otSlaveVersion, 0));
-        return ot_isValidResponse(response) ? ot_getUInt(response) : 0;
+        return ot_isValidResponse(response) ? response : 0;
     }
 
     float ot_getSlaveOTVersion()
     {
-        return ot_sendRequest(ot_buildRequest(OT_READ_DATA, otSlaveVersion, 0));
+        unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otOpenThermVersionSlave, 0));
+        return ot_isValidResponse(response) ? ot_getFloat(response) : 0;
     }
 
     unsigned int ot_getFault()
