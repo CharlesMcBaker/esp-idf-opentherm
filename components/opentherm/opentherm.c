@@ -12,21 +12,6 @@ extern "C"
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
 #endif
 
-#define CHECK(x)                \
-    do                          \
-    {                           \
-        esp_err_t __;           \
-        if ((__ = x) != ESP_OK) \
-            return __;          \
-    } while (0)
-
-#define CHECK_ARG(VAL)                  \
-    do                                  \
-    {                                   \
-        if (!(VAL))                     \
-            return ESP_ERR_INVALID_ARG; \
-    } while (0)
-
 #if defined(CONFIG_IDF_TARGET_ESP32) || defined(CONFIG_IDF_TARGET_ESP32S2) || defined(CONFIG_IDF_TARGET_ESP32C3)
 #ifndef HELPER_TARGET_IS_ESP32
 #define HELPER_TARGET_IS_ESP32 (1)
@@ -118,10 +103,12 @@ extern "C"
 
     bool ot_sendRequestAsync(unsigned long request)
     {
+        PORT_ENTER_CRITICAL;
         bool ready = ot_isReady();
+        PORT_EXIT_CRITICAL;
         if (!ready)
             return false;
-        PORT_ENTER_CRITICAL;
+
         _otStatus = OT_REQUEST_SENDING;
         _otResponse = 0;
         _otResponseStatus = OT_NONE;
@@ -137,7 +124,7 @@ extern "C"
 
         _otStatus = OT_RESPONSE_WAITING;
         _otResponseTimeStamp = esp_timer_get_time();
-        PORT_EXIT_CRITICAL;
+
         return true;
     }
 
@@ -242,6 +229,7 @@ extern "C"
         PORT_ENTER_CRITICAL;
         OpenThermStatus_t st = _otStatus;
         int64_t ts = _otResponseTimeStamp;
+        PORT_EXIT_CRITICAL;
 
         if (st == OT_READY)
             return;
@@ -274,7 +262,6 @@ extern "C"
                 _otStatus = OT_READY;
             }
         }
-        PORT_EXIT_CRITICAL;
     }
 
     bool parity(unsigned long frame)
