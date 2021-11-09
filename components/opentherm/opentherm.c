@@ -392,27 +392,17 @@ extern "C"
         return ot_buildRequest(OT_READ_DATA, otTboiler, 0);
     }
 
-    unsigned long buildSetBoilerTemperatureRequest(float temperature)
-    {
-        unsigned int data = ot_temperatureToData(temperature);
-        return ot_buildRequest(OT_WRITE_DATA, otTSet, data);
-    }
-
-    unsigned long buildSetBoilerStatusRequest(bool enableCH, bool enableDHW)
+    unsigned long ot_setBoilerStatus(bool enableCH, bool enableDHW)
     {
         unsigned int data = enableCH | enableDHW << 1;
         data <<= 8;
-        return ot_buildRequest(OT_READ_DATA, otStatus, data);
-    }
-
-    unsigned long ot_setBoilerStatus(bool enableCH, bool enableDHW)
-    {
-        return ot_sendRequest(buildSetBoilerStatusRequest(enableCH, enableDHW));
+        return ot_sendRequest(ot_buildRequest(OT_READ_DATA, otStatus, data));
     }
 
     bool ot_setBoilerTemperature(float temperature)
     {
-        unsigned long response = ot_sendRequest(buildSetBoilerTemperatureRequest(temperature));
+        unsigned int data = ot_temperatureToData(temperature);
+        unsigned long response = ot_sendRequest(ot_buildRequest(OT_WRITE_DATA, otTSet, data));
         return ot_isValidResponse(response);
     }
 
@@ -451,6 +441,23 @@ extern "C"
     {
         unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otCHPressure, 0));
         return ot_isValidResponse(response) ? ot_getFloat(response) : 0;
+    }
+
+    unsigned long ot_reset()
+    {
+        unsigned int data = 1 << 8;
+        return ot_sendRequest(ot_buildRequest(OT_WRITE_DATA, otCommand, data));
+    }
+
+    unsigned long ot_getSlaveProductVersion()
+    {
+        unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otSlaveVersion, 0));
+        return ot_isValidResponse(response) ? ot_getUInt(response) : 0;
+    }
+
+    float ot_getSlaveOTVersion()
+    {
+        return ot_sendRequest(ot_buildRequest(OT_READ_DATA, otSlaveVersion, 0));
     }
 
     unsigned int ot_getFault()

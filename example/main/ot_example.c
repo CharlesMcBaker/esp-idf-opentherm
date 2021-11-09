@@ -13,6 +13,7 @@
 static const char *TAG = "ot-example";
 
 volatile float dhwTemp = 0;
+volatile float chTemp = 0;
 volatile bool fault = false;
 static int targetDHWTemp = 41;
 static int targetCHTemp = 60;
@@ -34,9 +35,9 @@ static void IRAM_ATTR ot_handler(void *arg)
 static void IRAM_ATTR ot_processResponseCallback(unsigned long response, OpenThermResponseStatus_t responseStatus)
 {
     // normally you shouldn't call printf in an interrupt handler, it will crash something.
-    ESP_LOGI(TAG, "Response from processResponseCallback!\n");
-    ESP_LOGI(TAG, "var response From CB: %lu\n", response);
-    ESP_LOGI(TAG, "var responseStatus from CB: %i\n", (int)responseStatus);
+    // ESP_LOGI(TAG, "Response from processResponseCallback!\n");
+    // ESP_LOGI(TAG, "var response From CB: %lu\n", response);
+    // ESP_LOGI(TAG, "var responseStatus from CB: %i\n", (int)responseStatus);
 }
 
 void otControl(void *pvParameter)
@@ -53,10 +54,22 @@ void otControl(void *pvParameter)
             ESP_LOGI(TAG, "Flame: %s\n", ot_isFlameOn(status) ? "ON" : "OFF");
             fault = ot_isFault(status);
             ESP_LOGI(TAG, "Fault: %s\n", fault ? "YES" : "NO");
-            ESP_LOGI(TAG, "Set CH Temp to: %i\n", ot_setBoilerTemperature(targetCHTemp));
-            ESP_LOGI(TAG, "Set DHW Temp to: %i\n", ot_setDHWTemperature(targetDHWTemp));
+            if (fault)
+            {
+                ot_reset();
+            }
+            ot_setBoilerTemperature(targetCHTemp);
+            ESP_LOGI(TAG, "Set CH Temp to: %i\n", targetCHTemp);
+            ot_setDHWTemperature(targetDHWTemp);
+            ESP_LOGI(TAG, "Set DHW Temp to: %i\n", targetDHWTemp);
             dhwTemp = ot_getDHWTemperature();
             ESP_LOGI(TAG, "DHW Temp: %.1f\n", dhwTemp);
+            chTemp = ot_getBoilerTemperature();
+            ESP_LOGI(TAG, "CH Temp: %.1f\n", chTemp);
+            unsigned long slaveProductVersion = ot_getSlaveProductVersion();
+            ESP_LOGI(TAG, "Slave Version: %08lX\n", slaveProductVersion);
+            float slaveOTVersion = ot_getSlaveOTVersion();
+            ESP_LOGI(TAG, "Slave OT Version: %.1f\n", slaveOTVersion);
         }
         else if (responseStatus == OT_TIMEOUT)
         {
@@ -76,7 +89,7 @@ void otControl(void *pvParameter)
             ESP_LOGE(TAG, "Fault Code: %i\n", ot_getFault());
         }
 
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
 }
 

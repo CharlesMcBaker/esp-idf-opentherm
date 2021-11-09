@@ -3,7 +3,6 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 #include "esp_timer.h"
-
 typedef enum OpenThermResponseStatus
 {
     OT_NONE,
@@ -144,5 +143,8 @@ float ot_getDHWTemperature();
 float ot_getModulation();
 float ot_getPressure();
 unsigned int ot_getFault();
+unsigned long ot_reset();
+unsigned long ot_getSlaveProductVersion();
+float ot_getSlaveOTVersion();
 const char *ot_statusToString(OpenThermResponseStatus_t status);
 const char *ot_messageTypeToString(OpenThermMessageType_t message_type);
