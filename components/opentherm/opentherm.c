@@ -120,7 +120,6 @@ extern "C"
             sendBit(bitRead(request, i));
         }
         sendBit(HIGH);
-        // setIdleState();
         gpio_set_level(_ot_pin_out, HIGH);
 
         _otStatus = OT_RESPONSE_WAITING;
@@ -465,6 +464,17 @@ extern "C"
         default:
             return "UNKNOWN";
         }
+    }
+
+    OpenThermMessageType_t ot_getMessageType(unsigned long message)
+    {
+        OpenThermMessageType_t msg_type = (OpenThermMessageType_t)((message >> 28) & 7);
+        return msg_type;
+    }
+
+    OpenThermMessageID_t ot_getDataID(unsigned long frame)
+    {
+        return (OpenThermMessageID_t)((frame >> 16) & 0xFF);
     }
 
     const char *ot_messageTypeToString(OpenThermMessageType_t message_type)

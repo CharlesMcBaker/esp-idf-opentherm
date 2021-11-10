@@ -146,5 +146,7 @@ unsigned int ot_getFault();
 unsigned long ot_reset();
 unsigned long ot_getSlaveProductVersion();
 float ot_getSlaveOTVersion();
+OpenThermMessageType_t ot_getMessageType(unsigned long message);
+OpenThermMessageID_t ot_getDataID(unsigned long frame);
 const char *ot_statusToString(OpenThermResponseStatus_t status);
 const char *ot_messageTypeToString(OpenThermMessageType_t message_type);
