@@ -35,9 +35,9 @@ static void IRAM_ATTR ot_handler(void *arg)
 static void IRAM_ATTR ot_processResponseCallback(unsigned long response, OpenThermResponseStatus_t responseStatus)
 {
     // normally you shouldn't call printf in an interrupt handler, it will crash something.
-    // ESP_LOGI(TAG, "Response from processResponseCallback!\n");
-    // ESP_LOGI(TAG, "var response From CB: %lu\n", response);
-    // ESP_LOGI(TAG, "var responseStatus from CB: %i\n", (int)responseStatus);
+    // ESP_LOGI(TAG, "Response from processResponseCallback!");
+    // ESP_LOGI(TAG, "var response From CB: %lu", response);
+    // ESP_LOGI(TAG, "var responseStatus from CB: %i", (int)responseStatus);
 }
 
 void otControl(void *pvParameter)
@@ -49,44 +49,44 @@ void otControl(void *pvParameter)
         OpenThermResponseStatus_t responseStatus = ot_getLastResponseStatus();
         if (responseStatus == OT_SUCCESS)
         {
-            ESP_LOGI(TAG, "Central Heating: %s\n", ot_isCentralHeatingActive(status) ? "ON" : "OFF");
-            ESP_LOGI(TAG, "Hot Water: %s\n", ot_isHotWaterActive(status) ? "ON" : "OFF");
-            ESP_LOGI(TAG, "Flame: %s\n", ot_isFlameOn(status) ? "ON" : "OFF");
+            ESP_LOGI(TAG, "Central Heating: %s", ot_isCentralHeatingActive(status) ? "ON" : "OFF");
+            ESP_LOGI(TAG, "Hot Water: %s", ot_isHotWaterActive(status) ? "ON" : "OFF");
+            ESP_LOGI(TAG, "Flame: %s", ot_isFlameOn(status) ? "ON" : "OFF");
             fault = ot_isFault(status);
-            ESP_LOGI(TAG, "Fault: %s\n", fault ? "YES" : "NO");
+            ESP_LOGI(TAG, "Fault: %s", fault ? "YES" : "NO");
             if (fault)
             {
                 ot_reset();
             }
             ot_setBoilerTemperature(targetCHTemp);
-            ESP_LOGI(TAG, "Set CH Temp to: %i\n", targetCHTemp);
+            ESP_LOGI(TAG, "Set CH Temp to: %i", targetCHTemp);
             ot_setDHWTemperature(targetDHWTemp);
-            ESP_LOGI(TAG, "Set DHW Temp to: %i\n", targetDHWTemp);
+            ESP_LOGI(TAG, "Set DHW Temp to: %i", targetDHWTemp);
             dhwTemp = ot_getDHWTemperature();
-            ESP_LOGI(TAG, "DHW Temp: %.1f\n", dhwTemp);
+            ESP_LOGI(TAG, "DHW Temp: %.1f", dhwTemp);
             chTemp = ot_getBoilerTemperature();
-            ESP_LOGI(TAG, "CH Temp: %.1f\n", chTemp);
+            ESP_LOGI(TAG, "CH Temp: %.1f", chTemp);
             unsigned long slaveProductVersion = ot_getSlaveProductVersion();
-            ESP_LOGI(TAG, "Slave Version: %08lX\n", slaveProductVersion);
+            ESP_LOGI(TAG, "Slave Version: %08lX", slaveProductVersion);
             float slaveOTVersion = ot_getSlaveOTVersion();
-            ESP_LOGI(TAG, "Slave OT Version: %.1f\n", slaveOTVersion);
+            ESP_LOGI(TAG, "Slave OT Version: %.1f", slaveOTVersion);
         }
         else if (responseStatus == OT_TIMEOUT)
         {
-            ESP_LOGE(TAG, "OT Communication Timeout\n");
+            ESP_LOGE(TAG, "OT Communication Timeout");
         }
         else if (responseStatus == OT_INVALID)
         {
-            ESP_LOGE(TAG, "OT Communication Invalid\n");
+            ESP_LOGE(TAG, "OT Communication Invalid");
         }
         else if (responseStatus == OT_NONE)
         {
-            ESP_LOGE(TAG, "OpenTherm not initialized\n");
+            ESP_LOGE(TAG, "OpenTherm not initialized");
         }
 
         if (fault)
         {
-            ESP_LOGE(TAG, "Fault Code: %i\n", ot_getFault());
+            ESP_LOGE(TAG, "Fault Code: %i", ot_getFault());
         }
 
         vTaskDelay(5000 / portTICK_PERIOD_MS);
@@ -95,7 +95,7 @@ void otControl(void *pvParameter)
 
 void app_main()
 {
-    printf("OpenTherm library example!\n");
+    printf("OpenTherm library example!");
     init_hw();
 
     xTaskCreate(otControl, TAG, configMINIMAL_STACK_SIZE * 4, NULL, 3, NULL);
