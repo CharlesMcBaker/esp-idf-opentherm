@@ -375,9 +375,9 @@ extern "C"
         return data;
     }
 
-    unsigned long ot_setBoilerStatus(bool enableCH, bool enableDHW)
+    unsigned long ot_setBoilerStatus(bool enableCH, bool enableDHW, bool enableCooling, bool enableOTC, bool enableCH2, bool enableSummerMode, bool dhwBlock)
     {
-        unsigned int data = enableCH | enableDHW << 1;
+        unsigned int data = enableCH | enableDHW << 1 | enableCooling << 2 | enableOTC << 3 | enableCH2 << 4 | enableSummerMode << 5 | dhwBlock << 6;
         data <<= 8;
         return ot_sendRequest(ot_buildRequest(OT_READ_DATA, otStatus, data));
     }
@@ -438,6 +438,11 @@ extern "C"
         return ot_isValidResponse(response) ? response : 0;
     }
 
+    unsigned long ot_getSlaveConfiguration()
+    {
+        unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otSConfigSMemberIDcode, 0));
+        return ot_isValidResponse(response) ? response : 0;
+    }
     float ot_getSlaveOTVersion()
     {
         unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otOpenThermVersionSlave, 0));

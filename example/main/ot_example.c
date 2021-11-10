@@ -44,7 +44,7 @@ void otControl(void *pvParameter)
 {
     while (1)
     {
-        unsigned long status = ot_setBoilerStatus(false, true);
+        unsigned long status = ot_setBoilerStatus(false, true, false, false, false, true, false);
 
         OpenThermResponseStatus_t responseStatus = ot_getLastResponseStatus();
         if (responseStatus == OT_SUCCESS)
