@@ -6,8 +6,8 @@
 #include <esp_log.h>
 #include <esp_err.h>
 
-#define GPIO_OT_IN 14
-#define GPIO_OT_OUT 12
+#define GPIO_OT_IN 14  // 7 for NodeMCU ESP-12H
+#define GPIO_OT_OUT 12 // 8 for NodeMCU ESP-12H
 #define ESP_INTR_FLAG_DEFAULT 0
 
 static const char *TAG = "ot-example";
