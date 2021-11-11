@@ -194,7 +194,7 @@ extern "C"
         }
         else if (_otStatus == OT_RESPONSE_START_BIT)
         {
-            if ((newTs - _otResponseTimeStamp < 750) && ot_readState() == LOW)
+            if ((newTs - _otResponseTimeStamp < 700) && ot_readState() == LOW)
             {
                 _otStatus = OT_RESPONSE_RECEIVING;
                 _otResponseTimeStamp = newTs;
@@ -208,7 +208,7 @@ extern "C"
         }
         else if (_otStatus == OT_RESPONSE_RECEIVING)
         {
-            if ((newTs - _otResponseTimeStamp) > 750)
+            if ((newTs - _otResponseTimeStamp) > 700)
             {
                 if (_otResponseBitIndex < 32)
                 {
