@@ -5,6 +5,18 @@ extern "C"
 {
 #endif
 
+#ifndef SYNC_TIME_US
+#define SYNC_TIME_US 700 // defualt 700
+#endif
+
+#ifndef DELAY_TIME_US
+#define DELAY_TIME_US 500 // default 500
+#endif
+
+#ifndef MAX_PERIOD_US
+#define MAX_PERIOD_US 1000000 // default 1000000
+#endif
+
 #define HIGH 1
 #define LOW 0
 #ifndef bit
@@ -96,9 +108,9 @@ extern "C"
     void sendBit(bool high)
     {
         gpio_set_level(_ot_pin_out, !high);
-        ets_delay_us(500);
+        ets_delay_us(DELAY_TIME_US);
         gpio_set_level(_ot_pin_out, high);
-        ets_delay_us(500);
+        ets_delay_us(DELAY_TIME_US);
     }
 
     bool ot_sendRequestAsync(unsigned long request)
@@ -194,7 +206,7 @@ extern "C"
         }
         else if (_otStatus == OT_RESPONSE_START_BIT)
         {
-            if ((newTs - _otResponseTimeStamp < 700) && ot_readState() == LOW)
+            if ((newTs - _otResponseTimeStamp < SYNC_TIME_US) && ot_readState() == LOW)
             {
                 _otStatus = OT_RESPONSE_RECEIVING;
                 _otResponseTimeStamp = newTs;
@@ -208,7 +220,7 @@ extern "C"
         }
         else if (_otStatus == OT_RESPONSE_RECEIVING)
         {
-            if ((newTs - _otResponseTimeStamp) > 700)
+            if ((newTs - _otResponseTimeStamp) > SYNC_TIME_US)
             {
                 if (_otResponseBitIndex < 32)
                 {
@@ -235,7 +247,7 @@ extern "C"
         if (st == OT_READY)
             return;
         int64_t newTs = esp_timer_get_time();
-        if (st != OT_NOT_INITIALIZED && (newTs - ts) > 1000000)
+        if (st != OT_NOT_INITIALIZED && (newTs - ts) > MAX_PERIOD_US)
         {
             _otStatus = OT_READY;
             _otResponseStatus = OT_TIMEOUT;
@@ -452,6 +464,18 @@ extern "C"
     unsigned int ot_getFault()
     {
         return (ot_sendRequest(ot_buildRequest(OT_READ_DATA, otASFflags, 0)) & 0xff);
+    }
+
+    float ot_getOutsideTemperature()
+    {
+        unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otToutside, 0));
+        return ot_isValidResponse(response) ? ot_getFloat(response) : 0;
+    }
+
+    float ot_getDHWFlowrate()
+    {
+        unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otDHWFlowRate, 0));
+        return ot_isValidResponse(response) ? ot_getFloat(response) : 0;
     }
 
     const char *ot_statusToString(OpenThermResponseStatus_t status)

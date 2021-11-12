@@ -143,6 +143,8 @@ float ot_getDHWTemperature();
 float ot_getModulation();
 float ot_getPressure();
 unsigned int ot_getFault();
+float ot_getOutsideTemperature();
+float ot_getDHWFlowrate();
 unsigned long ot_reset();
 unsigned long ot_getSlaveProductVersion();
 float ot_getSlaveOTVersion();
