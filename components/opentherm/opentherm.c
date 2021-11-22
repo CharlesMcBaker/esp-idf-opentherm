@@ -49,13 +49,6 @@ extern "C"
 #define PORT_ENTER_CRITICAL portENTER_CRITICAL()
 #define PORT_EXIT_CRITICAL portEXIT_CRITICAL()
 #endif
-
-    static void __empty()
-    {
-        // Empty
-    }
-    void yield(void) __attribute__((weak, alias("__empty")));
-
     esp_err_t ot_init(gpio_num_t pin_in, gpio_num_t pin_out, bool isSlave, gpio_isr_t handleInterruptCallback, void (*processResponseCallback)(unsigned long, OpenThermResponseStatus_t))
     {
         // Initialize the GPIO
@@ -148,7 +141,7 @@ extern "C"
         while (!ot_isReady())
         {
             ot_process();
-            yield();
+            vPortYield();
         }
 
         return _otResponse;
@@ -469,12 +462,6 @@ extern "C"
     float ot_getOutsideTemperature()
     {
         unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otToutside, 0));
-        return ot_isValidResponse(response) ? ot_getFloat(response) : 0;
-    }
-
-    float ot_getDHWFlowrate()
-    {
-        unsigned long response = ot_sendRequest(ot_buildRequest(OT_READ_DATA, otDHWFlowRate, 0));
         return ot_isValidResponse(response) ? ot_getFloat(response) : 0;
     }
 
