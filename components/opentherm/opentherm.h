@@ -99,16 +99,16 @@ typedef enum OpenThermStatus
 
 typedef uint8_t byte;
 
-gpio_num_t _ot_pin_in;
-gpio_num_t _ot_pin_out;
-gpio_isr_t *_otHandleInterruptCallback;
-void (*_otProcessResponseCallback)(unsigned long, OpenThermResponseStatus_t);
-bool _otIsSlave;
-volatile OpenThermStatus_t _otStatus;
-volatile unsigned long _otResponse;
-volatile OpenThermResponseStatus_t _otResponseStatus;
-int64_t _otResponseTimeStamp;
-volatile byte _otResponseBitIndex;
+static gpio_num_t _ot_pin_in;
+static gpio_num_t _ot_pin_out;
+static gpio_isr_t *_otHandleInterruptCallback;
+static void (*_otProcessResponseCallback)(unsigned long, OpenThermResponseStatus_t);
+static bool _otIsSlave;
+static volatile OpenThermStatus_t _otStatus;
+static volatile unsigned long _otResponse;
+static volatile OpenThermResponseStatus_t _otResponseStatus;
+static int64_t _otResponseTimeStamp;
+static volatile byte _otResponseBitIndex;
 
 esp_err_t ot_init(gpio_num_t pin_in, gpio_num_t pin_out, bool isSlave, gpio_isr_t handleInterruptCallback, void (*processResponseCallback)(unsigned long, OpenThermResponseStatus_t));
 bool IRAM_ATTR ot_isReady();
