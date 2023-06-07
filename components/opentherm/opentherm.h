@@ -1,3 +1,6 @@
+#ifndef H_OPENTHERM_
+#define H_OPENTHERM_
+
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -152,3 +155,5 @@ OpenThermMessageType_t ot_getMessageType(unsigned long message);
 OpenThermMessageID_t ot_getDataID(unsigned long frame);
 const char *ot_statusToString(OpenThermResponseStatus_t status);
 const char *ot_messageTypeToString(OpenThermMessageType_t message_type);
+
+#endif
